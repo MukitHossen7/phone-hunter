@@ -1,5 +1,7 @@
 const loadAllData = async (isClick, searchText) => {
   document.getElementById("loadingContainer").classList.add("hidden");
+  document.getElementById("error-container").classList.add("hidden");
+  document.getElementById("card-container").classList.remove("hidden");
 
   const res = await fetch(
     `https://openapi.programming-hero.com/api/phones?search=${
@@ -7,6 +9,11 @@ const loadAllData = async (isClick, searchText) => {
     }`
   );
   const phoneData = await res.json();
+
+  if (!phoneData.status) {
+    document.getElementById("error-container").classList.remove("hidden");
+    document.getElementById("card-container").classList.add("hidden");
+  }
   isClick
     ? displayLoadPhone(phoneData.data)
     : displayLoadPhone(phoneData.data.slice(0, 6));
@@ -21,6 +28,7 @@ const showAllBtnFunction = () => {
 // display-load-phones
 const displayLoadPhone = (phones) => {
   const cardContainer = document.getElementById("card-container");
+  cardContainer.innerHTML = "";
   phones.forEach((phone) => {
     const div = document.createElement("div");
     div.innerHTML = `
@@ -49,10 +57,13 @@ const displayLoadPhone = (phones) => {
 // show-loading-function
 const loadingDisplay = () => {
   document.getElementById("loadingContainer").classList.remove("hidden");
+
   const searchText = document.getElementById("inputValue").value;
   setTimeout(() => {
     loadAllData(false, `${searchText}`);
   }, 3000);
+
+  document.getElementById("inputValue").value = "";
 };
 // show-loading-function
 
